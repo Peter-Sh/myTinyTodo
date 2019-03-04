@@ -424,7 +424,8 @@ function addTask ($db, $listId, $title, $tag, $note = null, $priority = null, $d
 	
 	if(Config::get('autotag'))
 		$tags .= ','._post('tag');
-	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
+	//$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
+	$ow = (int)$db->sq("SELECT MIN(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0") - 1;
 	$db->ex("BEGIN");
 	$db->dq("INSERT INTO {$db->prefix}todolist (uuid,list_id,title,d_created,d_edited,ow,prio,note,duedate) VALUES(?,?,?,?,?,?,?,?,?)",
 	array(generateUUID(), $listId, $title, time(), time(), $ow, $prio, $note, $duedate) );

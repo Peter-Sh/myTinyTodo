@@ -924,7 +924,7 @@ function submitNewTask(form)
 		var item = json.list[0];
 		taskList[item.id] = item;
 		taskOrder.push(parseInt(item.id));
-		$('#tasklist').append(prepareTaskStr(item));
+		$('#tasklist').prepend(prepareTaskStr(item));
 		changeTaskOrder(item.id);
 		$('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.newTaskFlashColor}, 2000);
 		refreshTaskCnt();
