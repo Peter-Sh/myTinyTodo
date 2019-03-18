@@ -89,6 +89,7 @@ class Config
 		'template' => array('default'=>'default', 'type'=>'s'),
 		'showdate' => array('default'=>0, 'type'=>'i'),
 		'version' => array('default'=>'v1.5.0', 'type'=>'s'),
+		'resort_completed' => array('default' => 0, 'type' => 'i'),
 	);
 
 	public static $config;

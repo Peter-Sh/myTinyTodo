@@ -74,7 +74,11 @@ elseif(isset($_GET['loadTasks']))
 	$s = trim(_get('s'));
 	if($s != '') $sqlWhere .= " AND (title LIKE ". $db->quoteForLike("%%%s%%",$s). " OR note LIKE ". $db->quoteForLike("%%%s%%",$s). ")";
 	$sort = (int)_get('sort');
-	$sqlSort = "ORDER BY compl ASC, ";
+	if (Config::get('resort_completed')) {
+		$sqlSort = "ORDER BY compl ASC, ";
+	} else {
+		$sqlSort = "ORDER BY ";
+	}
 	if($sort == 1) $sqlSort .= "prio DESC, ddn ASC, duedate ASC, ow ASC";		// byPrio
 	elseif($sort == 101) $sqlSort .= "prio ASC, ddn DESC, duedate DESC, ow DESC";	// byPrio (reverse)
 	elseif($sort == 2) $sqlSort .= "ddn ASC, duedate ASC, prio DESC, ow ASC";	// byDueDate
@@ -132,12 +136,18 @@ elseif(isset($_GET['completeTask']))
 	check_write_access();
 	$id = (int)_post('id');
 	$compl = _post('compl') ? 1 : 0;
-	$listId = (int)$db->sq("SELECT list_id FROM {$db->prefix}todolist WHERE id=$id");
-	if($compl) 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=1");
-	else $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
-	$dateCompleted = $compl ? time() : 0;
-	$db->dq("UPDATE {$db->prefix}todolist SET compl=$compl,ow=$ow,d_completed=?,d_edited=? WHERE id=$id",
-				array($dateCompleted, time()) );
+	if (Config::get('resort_completed')) {
+		$listId = (int)$db->sq("SELECT list_id FROM {$db->prefix}todolist WHERE id=$id");
+		if($compl) 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=1");
+		else $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
+		$dateCompleted = $compl ? time() : 0;
+		$db->dq("UPDATE {$db->prefix}todolist SET compl=$compl,ow=$ow,d_completed=?,d_edited=? WHERE id=$id",
+					array($dateCompleted, time()) );
+	} else {
+		$dateCompleted = $compl ? time() : 0;
+		$db->dq("UPDATE {$db->prefix}todolist SET compl=$compl,d_completed=?,d_edited=? WHERE id=$id",
+					array($dateCompleted, time()) );
+	}
 	$t = array();
 	$t['total'] = 1;
 	$r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");

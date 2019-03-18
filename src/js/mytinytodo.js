@@ -411,7 +411,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		}
 
 		$("#tasklist").sortable({
-				items:'> :not(.task-completed)', cancel:'span,input,a,textarea',
+				//items:'> :not(.task-completed)',
+				cancel:'span,input,a,textarea',
 		 		delay:150, start:sortStart, update:orderChanged,
 				placeholder:'mtt-task-placeholder'
 		});
@@ -941,7 +942,7 @@ function changeTaskOrder(id)
 	var oldOrder = taskOrder.slice();
 	// sortByHand
 	if(curList.sort == 0) taskOrder.sort( function(a,b){
-			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
+			//if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
 			return taskList[a].ow-taskList[b].ow
 		});
 	// sortByPrio
